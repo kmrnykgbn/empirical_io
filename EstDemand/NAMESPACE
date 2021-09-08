@@ -1,0 +1,4 @@
+useDynLib(EstDemand)
+import(RcppEigen)
+importFrom(Rcpp, evalCpp)
+export("Rcpp.fake.fun")
