@@ -1,31 +1,31 @@
-\name{EstDemand-package}
-\alias{EstDemand-package}
-\alias{EstDemand}
+\name{estDem-package}
+\alias{estDem-package}
+\alias{estDem}
 \docType{package}
 \title{
-\packageTitle{EstDemand}
+\packageTitle{estDem}
 }
 \description{
-\packageDescription{EstDemand}
+\packageDescription{estDem}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{EstDemand}
-\packageIndices{EstDemand}
+\packageDESCRIPTION{estDem}
+\packageIndices{estDem}
 ~~ An overview of how to use the package, including the most ~~
 ~~ important functions ~~
 }
 \author{
-\packageAuthor{EstDemand}
+\packageAuthor{estDem}
 
-Maintainer: \packageMaintainer{EstDemand}
+Maintainer: \packageMaintainer{estDem}
 }
 \references{
 ~~ Literature or other references for background information ~~
 }
-~~ Optionally other standard keywords, one per line, from file ~~
-~~ KEYWORDS in the R documentation directory ~~
+~~ Optionally other standard keywords, one per line, from ~~
+~~ file KEYWORDS in the R documentation directory ~~
 \keyword{ package }
 \seealso{
 ~~ Optional links to other man pages, e.g. ~~

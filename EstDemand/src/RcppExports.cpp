@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // rcppeigen_hello_world
 Eigen::MatrixXd rcppeigen_hello_world();
-RcppExport SEXP _EstDemand_rcppeigen_hello_world() {
+RcppExport SEXP _estDem_rcppeigen_hello_world() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // rcppeigen_outerproduct
 Eigen::MatrixXd rcppeigen_outerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _EstDemand_rcppeigen_outerproduct(SEXP xSEXP) {
+RcppExport SEXP _estDem_rcppeigen_outerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // rcppeigen_innerproduct
 double rcppeigen_innerproduct(const Eigen::VectorXd& x);
-RcppExport SEXP _EstDemand_rcppeigen_innerproduct(SEXP xSEXP) {
+RcppExport SEXP _estDem_rcppeigen_innerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // rcppeigen_bothproducts
 Rcpp::List rcppeigen_bothproducts(const Eigen::VectorXd& x);
-RcppExport SEXP _EstDemand_rcppeigen_bothproducts(SEXP xSEXP) {
+RcppExport SEXP _estDem_rcppeigen_bothproducts(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,14 +51,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_EstDemand_rcppeigen_hello_world", (DL_FUNC) &_EstDemand_rcppeigen_hello_world, 0},
-    {"_EstDemand_rcppeigen_outerproduct", (DL_FUNC) &_EstDemand_rcppeigen_outerproduct, 1},
-    {"_EstDemand_rcppeigen_innerproduct", (DL_FUNC) &_EstDemand_rcppeigen_innerproduct, 1},
-    {"_EstDemand_rcppeigen_bothproducts", (DL_FUNC) &_EstDemand_rcppeigen_bothproducts, 1},
+    {"_estDem_rcppeigen_hello_world", (DL_FUNC) &_estDem_rcppeigen_hello_world, 0},
+    {"_estDem_rcppeigen_outerproduct", (DL_FUNC) &_estDem_rcppeigen_outerproduct, 1},
+    {"_estDem_rcppeigen_innerproduct", (DL_FUNC) &_estDem_rcppeigen_innerproduct, 1},
+    {"_estDem_rcppeigen_bothproducts", (DL_FUNC) &_estDem_rcppeigen_bothproducts, 1},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_EstDemand(DllInfo *dll) {
+RcppExport void R_init_estDem(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

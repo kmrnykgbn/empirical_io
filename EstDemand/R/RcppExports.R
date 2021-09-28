@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rcppeigen_hello_world <- function() {
-    .Call('_EstDemand_rcppeigen_hello_world', PACKAGE = 'EstDemand')
+    .Call('_estDem_rcppeigen_hello_world', PACKAGE = 'estDem')
 }
 
 rcppeigen_outerproduct <- function(x) {
-    .Call('_EstDemand_rcppeigen_outerproduct', PACKAGE = 'EstDemand', x)
+    .Call('_estDem_rcppeigen_outerproduct', PACKAGE = 'estDem', x)
 }
 
 rcppeigen_innerproduct <- function(x) {
-    .Call('_EstDemand_rcppeigen_innerproduct', PACKAGE = 'EstDemand', x)
+    .Call('_estDem_rcppeigen_innerproduct', PACKAGE = 'estDem', x)
 }
 
 rcppeigen_bothproducts <- function(x) {
-    .Call('_EstDemand_rcppeigen_bothproducts', PACKAGE = 'EstDemand', x)
+    .Call('_estDem_rcppeigen_bothproducts', PACKAGE = 'estDem', x)
 }
 
