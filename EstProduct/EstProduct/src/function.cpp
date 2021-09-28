@@ -26,20 +26,9 @@ NumericVector moment_OP_2nd_rcpp(int T, int J, double alpha, double beta_0, doub
       double lag_k = matA(i , 1);
       
       for (int k = 0; k < K; k++) {
-        double resVal = 0;
-        /*t=0 case*/
-        if (t == 0) {
-      /*lag_k0 =0*/
-          if (k != 1){
-           resVal = (y_error_tilde(i) -beta_0 - beta_k * k 
-           - alpha * (phi_t_1(i) - beta_0))
-           * matA(i , k);
-          }
-        } else {
-          resVal = (y_error_tilde(i) -beta_0 - beta_k * k 
+        double resVal = (y_error_tilde(i) -beta_0 - beta_k * k 
           -alpha * (phi_t_1(i) -beta_0 - beta_k * lag_k))
           * matA(i , k);
-        }
         r[k] += resVal;
       }
     }

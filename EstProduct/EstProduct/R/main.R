@@ -5,9 +5,10 @@ library(np)
 library(gmm)
 
 source("R/functions.R")
+sourceCpp("src/function.cpp")
 
 # parameters
-beta_0 = 1
+beta_0 = 1.0
 beta_l = 0.2
 beta_k = 0.7
 alpha = 0.7
@@ -24,10 +25,10 @@ set.seed(1)
 df <- tibble(j=1:n,
              t=1,
              k=rnorm(n,1,0.5),
-             omega=1.401*rnorm(n,0,sigma_nu),
+             omega=2*alpha*rnorm(n,0,sigma_nu),
              wage=0.5,
              iota=rnorm(n, 0, 0.05),
-             l=log_labor_choice(k, 0.5, omega, beta_0, beta_l, beta_k, sigma_eta),
+             l=log_labor_choice(k, wage, omega, beta_0, beta_l, beta_k, sigma_eta),
              l_error=log_labor_choice_error(k, 0.5, omega, beta_0,
                                             beta_l, beta_k, iota, sigma_eta),
              I=investment_choice(exp(k), omega, 0.1, delta),
@@ -37,30 +38,28 @@ df <- tibble(j=1:n,
 
 df
 df_T <- df
-
-
 for (time in 2:t){
   omega_b = df_T[which(df_T[["t"]] == time-1), ]$omega
   k_b = df_T[which(df_T[["t"]] == time-1), "k"]$k
   I_b = df_T[which(df_T[["t"]] == time-1), "I"]$I
-  add_df <- tibble(i=1:n,
-                   t=time,
-                   k=log((1-delta)*exp(k_b)+I_b),
-                   omega=alpha * omega_b  + rnorm(n, 0, sigma_nu) ,
-                   wage=0.5,
-                   iota=rnorm(n, 0, 0.05),
-                   l=log_labor_choice(k, 0.5, omega, beta_0, beta_l, beta_k, sigma_eta),
-                   l_error=log_labor_choice_error(k, 0.5, omega, beta_0,
+  add_df <- tibble(j = 1:n,
+                   t = time,
+                   k = log((1-delta)*exp(k_b)+I_b),
+                   omega = alpha * omega_b  + rnorm(n, 0, sigma_nu) , 
+                   wage = 0.5,
+                   iota = rnorm(n, 0, 0.05),
+                   l = log_labor_choice(k, wage, omega, beta_0, beta_l, beta_k, sigma_eta),
+                   l_error = log_labor_choice_error(k, 0.5, omega, beta_0,
                                                   beta_l, beta_k, iota, sigma_eta),
-                   I=investment_choice(exp(k), omega, 0.1, delta),
-                   eta=rnorm(n,0,sigma_eta),
-                   y=log_prodction(l, k, omega, eta, beta_0, beta_l, beta_k),
-                   y_error=log_prodction(l_error, k, omega, eta, beta_0, beta_l, beta_k))
+                   I = investment_choice(exp(k), omega, 0.1, delta),
+                   eta = rnorm(n,0,sigma_eta),
+                   y = log_prodction(l, k, omega, eta, beta_0, beta_l, beta_k),
+                   y_error = log_prodction(l_error, k, omega, eta, beta_0, beta_l, beta_k))
  df_T <- bind_rows(df_T, add_df)
 }
 
 df_T
-summary(df_T)
+describe(df_T)[c("mean", "sd", "min", "max")]
 
 
 # regression
@@ -70,19 +69,20 @@ summary(reg_m)
 df_within = df_T %>%
   select(t, j, y_error, l_error, k) %>%
   group_by(j) %>%
-  arrange(t) %>%
-  mutate(dy_error = y_error - lag(y_error, default=mean(y_error)),
-         dk = k - lag(k, default=mean(k)),
-         dl_error = l_error - lag(l_error, default=mean(l_error))) %>%
-  ungroup
+  arrange(j, t) %>%
+  mutate(dy_error = y_error - lag(y_error, default=0),
+         dk = k - lag(k, default=0),
+         dl_error = l_error - lag(l_error, default=0)) %>%
+  ungroup()
 
 #within
 within_reg = lm(dy_error~-1 + dl_error +dk, df_within)
 summary(within_reg)
 
 #partial regression(l_error_version)
-bw <- npplregbw(formula=y~1+l_error|k+I, data=df_T, itmax=100, nmulti=1)
-pl_error <- npplreg(bws = bw, txdat = as.data.frame(df_T[, "l_error"]), tydat = df_T$y, tzdat = as.data.frame(df_T[, c("k", "I")]))
+#bw <- npplregbw(formula=y~1+l_error+k+I|k+I, data=df_T)
+#bw <- npplregbw(formula=y~1+l_error|k+I, data=df_T, itmax=100, nmulti=1)
+pl_error <- npplreg(bws = bw, txdat = as.data.frame(df_T[, c("l_error", "k", "I")]), tydat = df_T$y, tzdat = as.data.frame(df_T[, c("k", "I")]))
 summary(pl_error)
 
 #partial regression(l_version)
@@ -98,12 +98,19 @@ g <- ggplot(df_y_error, aes(x=fitted, y=actual)) + geom_point()
 plot(g)
 
 # second_step estimate
-beta_l_hat <- 0.2485295 # true value is coef(pl_error)
+beta_l_hat <- coef(pl_error) 
 phi_1_t <- fitted(pl_error) -beta_l_hat*df$l_error
-phi_idf_T_1st <- expand.grid(i=1:n, t=1:t) %>%
-  mutate(y_error_tilde=df_T$y_error-beta_l_hat*df_T$l_error,
-         phi_t_1=lag(phi_1_t, default=mean(phi_1_t))
-         -beta_0-beta_l_hat*lag(df_T$l_error, default=mean(df_T$l_error)))
+lag_df <-  df_T %>% 
+  mutate(phi_1_t = phi_1_t) %>%
+  group_by(j) %>% 
+  arrange(j) %>%
+  mutate(lag_phi = lag(phi_1_t, default=0)) %>%
+  ungroup()
+
+
+df_T_1st <- expand_grid(i=1:n, t=1:t) %>%
+  mutate(y_error_tilde = df_T$y_error-beta_l_hat*df_T$l_error,
+         phi_t_1=lag_df$lag_phi) 
 df_T_1st
 
 # get moment
